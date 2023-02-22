@@ -1,0 +1,18 @@
+<!-- START /screens/interfile_itfScanData/interfile_itfScanData_details.vm -->
+#macro(escapeProperty $prop)#escapeCleanHTML("$!scan.getProperty($prop)")#end
+<table class="xnat-table alt1 compact rows-only scan-details scan-details-table" style="border: none;">
+    <tr>
+        <th>Image</th>
+        <td align="left">
+            <span>#scanSnapshotImage($content $om $scan)</span>
+        </td>
+    </tr>
+    #if($scan.getProperty("injectedDose"))
+        <tr>
+            <th>Injected Dose (MBq)</th>
+            <td align="left"><span>#escapeProperty("injectedDose")</span></td>
+        </tr>
+    #end
+
+</table>
+<!-- END /screens/interfile_itfScanData/interfile_itfScanData_details.vm-->

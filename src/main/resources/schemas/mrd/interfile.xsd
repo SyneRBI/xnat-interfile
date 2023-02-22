@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  ~ interfile: interfile.xsd
+  ~ XNAT https://www.xnat.org
+  ~ Copyright (c) 2022, Physikalisch-Technische Bundesanstalt
+  ~ All Rights Reserved
+  ~
+  ~ Released under Apache 2.0
+  -->
+
+<xs:schema targetNamespace="http://ptb.de/interfile" xmlns:interfile="http://ptb.de/interfile"
+		   xmlns:xnat="http://nrg.wustl.edu/xnat"
+		   xmlns:xs="http://www.w3.org/2001/XMLSchema" elementFormDefault="qualified" attributeFormDefault="unqualified">
+	<xs:import namespace="http://nrg.wustl.edu/xnat" schemaLocation="../xnat/xnat.xsd"/>
+	<xs:element name="itfScanData" type="interfile:itfScanData"/>
+
+	<xs:complexType name="itfScanData">
+		<xs:annotation>
+			<xs:documentation>Information about an individual PET raw data scan.</xs:documentation>
+		</xs:annotation>
+		<xs:complexContent>
+			<xs:extension base="xnat:imageScanData">
+				<xs:sequence>
+					<xs:element maxOccurs="1" minOccurs="0" name="injectedDose" type="xs:float" />
+				</xs:sequence>
+			</xs:extension>
+		</xs:complexContent>
+	</xs:complexType>
+
+    </xs:schema>
