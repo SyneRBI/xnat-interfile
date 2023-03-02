@@ -1,5 +1,5 @@
 /*
- * interfile: build.gradle
+ * stir: build.gradle
  * Copyright (c) 2022, Physikalisch-Technische Bundesanstalt
  * All Rights Reserved
  *
@@ -24,7 +24,7 @@ plugins {
 
 group "gov.ptb.qmri.xnat"
 version "1.0.0-SNAPSHOT"
-description "XNAT plugin to support intefile raw data"
+description "XNAT plugin to support stir-readable raw data"
 
 // This provides access to all of these repositories for dependency resolution.
 repositories {

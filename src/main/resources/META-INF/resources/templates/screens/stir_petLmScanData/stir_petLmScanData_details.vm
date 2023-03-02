@@ -1,4 +1,4 @@
-<!-- START /screens/interfile_itfScanData/interfile_itfScanData_details.vm -->
+<!-- START /screens/stir_petLmScanData/stir_petLmScanData_details.vm -->
 #macro(escapeProperty $prop)#escapeCleanHTML("$!scan.getProperty($prop)")#end
 <table class="xnat-table alt1 compact rows-only scan-details scan-details-table" style="border: none;">
     <tr>
@@ -7,12 +7,12 @@
             <span>#scanSnapshotImage($content $om $scan)</span>
         </td>
     </tr>
-    #if($scan.getProperty("injectedDose"))
+    #if($scan.getProperty("scannerInformation.name"))
         <tr>
-            <th>Injected Dose (MBq)</th>
-            <td align="left"><span>#escapeProperty("injectedDose")</span></td>
+            <th>Scanner name</th>
+            <td align="left"><span>#escapeProperty("scannerInformation.name")</span></td>
         </tr>
     #end
 
 </table>
-<!-- END /screens/interfile_itfScanData/interfile_itfScanData_details.vm-->
+<!-- END /screens/stir_petLmScanData/stir_petLmScanData_details.vm-->

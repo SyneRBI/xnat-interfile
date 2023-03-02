@@ -1,6 +1,6 @@
 # Interfile
 
-Xnat schema for interfile data format.
+Xnat schema for PET raw data format supported by STIR.
 
 In order to create the plugin clone the repository:
 ```
@@ -23,4 +23,4 @@ before building again with
 ```
 
 ## Hints
-- If you make changes to interfile.xsd and add new parameters then it is best to delete *interfile_itfScanData_details.vm* and let gradle recreate it. Copy it then from the folder *xnat-generated* back.
+- If you make changes to stir.xsd and add new parameters then it is best to delete *stir_petLmScanData_details.vm* and let gradle recreate it. Copy it then from the folder *xnat-generated* back.
