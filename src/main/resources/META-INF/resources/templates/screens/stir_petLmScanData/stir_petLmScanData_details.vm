@@ -13,6 +13,35 @@
             <td align="left"><span>#escapeProperty("scannerInformation.name")</span></td>
         </tr>
     #end
-
+    #if($scan.getProperty("radionuclideInformation.radionuclide"))
+        <tr>
+            <th>Radionuclide</th>
+            <td align="left"><span>#escapeProperty("radionuclideInformation.radionuclide")</span></td>
+        </tr>
+    #end
+    #if($scan.getProperty("radionuclideInformation.energy"))
+        <tr>
+            <th>Energy</th>
+            <td align="left"><span>#escapeProperty("radionuclideInformation.energy")</span></td>
+        </tr>
+    #end
+    #if($scan.getProperty("radionuclideInformation.halfLife"))
+        <tr>
+            <th>Half life</th>
+            <td align="left"><span>#escapeProperty("radionuclideInformation.halfLife")</span></td>
+        </tr>
+    #end
+    #if($scan.getProperty("examInformation.patientPosition"))
+        <tr>
+            <th>Patient position</th>
+            <td align="left"><span>#escapeProperty("examInformation.patientPosition")</span></td>
+        </tr>
+    #end
+    #if($scan.getProperty("frameInformation.frameDuration"))
+        <tr>
+            <th>Frame duration</th>
+            <td align="left"><span>#escapeProperty("frameInformation.frameDuration")</span></td>
+        </tr>
+    #end
 </table>
 <!-- END /screens/stir_petLmScanData/stir_petLmScanData_details.vm-->
