@@ -13,6 +13,9 @@ from interfile_2_xnat import interfile_listmode_2_xnat
 import logging
 from typing import Any, Tuple
 import stir
+import zenodo_get
+import tempfile
+import zipfile
 
 # Configure logging
 logging.basicConfig(
@@ -44,8 +47,8 @@ def upload_interfile_data(
     experiment = add_exam(xnat_subject, time_id, experiment_date)
 
     # Load interfile header and convert to XNAT format
-    with stir.ListModeData.read_from_file(interfile_listmode_file_path) as header:
-        xnat_hdr = interfile_listmode_2_xnat(header, Path(__file__).parent / "interfile.xsd")
+    header =  stir.ListModeData.read_from_file(str(interfile_listmode_file_path))
+    xnat_hdr = interfile_listmode_2_xnat(header)
 
     add_scan(experiment, xnat_hdr, scan_id, interfile_listmode_file_path)
 
@@ -151,7 +154,8 @@ def add_scan(
     # Create resource for interfile files - create the resource first, then upload
     scan_resource = scan.create_resource("PET_RAW")
     scan_resource.upload(interfile_file_path, interfile_file_path.name)
-    logger.info(f"Successfully created scan {scan_id} and uploaded interfile file")
+    scan_resource.upload(interfile_file_path, interfile_file_path.name.replace('.l.hdr', '.l'))
+    logger.info(f"Successfully created scan {scan_id} and uploaded interfile files")
 
 
 def main():
@@ -159,11 +163,19 @@ def main():
     user = "admin"
     password = "admin"
     project_name = "interfile"
+    
+    
+
+    tmp = tempfile.TemporaryDirectory()  # RAII, automatically cleaned up
+    data_folder = Path(tmp.name)
+    zenodo_get.download(record='1304454', retry_attempts=5, output_dir=data_folder)
+    with zipfile.ZipFile(data_folder / Path('NEMA_IQ.zip'), 'r') as zip_ref:
+        zip_ref.extractall(data_folder)
 
     interfile_file_path = (
-        Path(__file__).parent.parent
-        / "test-data"
-        / "2d_cart_cine_0001.h5"
+        data_folder
+        / "NEMA_IQ"
+        / "20170809_NEMA_60min_UCL.l.hdr"
     )
 
     # Use context manager for automatic connection cleanup

@@ -39,7 +39,7 @@ def interfile_schema_fields():
     component_paths = []
     for component in filtered_components:
         path = component.get_path().replace("{http://ptb.de/interfile}", "")
-        path = f"interfileScanData/{path.replace('/', '_').upper()}"
+        path = f"petLmScanData/{path.replace('/', '_').upper()}"
 
         # paths over 75 characters in xnat seem to be truncated
         if len(path) > 75:
@@ -62,15 +62,15 @@ def test_interfile_data_fields(xnat_session, interfile_schema_fields):
 
     # get interfile data types from xnat session
     inspector = xnat.inspect.Inspect(xnat_session)
-    assert "interfile:interfileScanData" in inspector.datatypes()
-    xnat_data_fields = inspector.datafields("interfileScanData")
+    assert "interfile:petLmScanData" in inspector.datatypes()
+    xnat_data_fields = inspector.datafields("petLmScanData")
 
     # get expected data types from plugin's interfile schema (+ added types relating to xnat project / session info)
     additional_xnat_fields = [
-        "interfileScanData/SESSION_LABEL",
-        "interfileScanData/SUBJECT_ID",
-        "interfileScanData/PROJECT",
-        "interfileScanData/ID",
+        "petLmScanData/SESSION_LABEL",
+        "petLmScanData/SUBJECT_ID",
+        "petLmScanData/PROJECT",
+        "petLmScanData/ID",
     ]
     expected_data_fields = interfile_schema_fields + additional_xnat_fields
 
