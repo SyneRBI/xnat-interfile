@@ -1,5 +1,5 @@
 /*
- * xnat-stir-plugin:
+ * xnat-interfile-plugin:
  * XNAT http://www.xnat.org
  * Copyright (c) 2022, Physikalisch-Technische Bundesanstalt
  * All Rights Reserved
@@ -7,18 +7,18 @@
  * Released under Apache 2.0
  */
 
-package org.nrg.xnat.stir;
+package org.nrg.xnat.interfile;
 
 import org.nrg.framework.annotations.XnatDataModel;
 import org.nrg.framework.annotations.XnatPlugin;
-import org.nrg.xdat.bean.StirPetlmscandataBean;
+import org.nrg.xdat.bean.InterfilePetlmscandataBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 
-@XnatPlugin(value = "stirPlugin", name = "XNAT 1.8 stir plugin",
-            dataModels = {@XnatDataModel(value = StirPetlmscandataBean.SCHEMA_ELEMENT_NAME,
+@XnatPlugin(value = "interfilePlugin", name = "XNAT 1.8 interfile plugin",
+            dataModels = {@XnatDataModel(value = InterfilePetlmscandataBean.SCHEMA_ELEMENT_NAME,
                                          singular = "PET listmode data",
                                          plural = "PET listmode data",
-                                         code = "STIRLM")})
-public class StirXnatPlugin {
+                                         code = "INTERFILELM")})
+public class InterfileXnatPlugin {
 }

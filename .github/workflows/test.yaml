@@ -1,0 +1,77 @@
+---
+name: Run tests
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    types:
+      - opened
+      - ready_for_review
+      - reopened
+      - synchronize
+
+concurrency:
+  cancel-in-progress: true
+  group: >-
+    ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
+
+jobs:
+  tests:
+    timeout-minutes: 10
+    if: github.event.pull_request.draft == false
+    runs-on: ubuntu-latest
+
+    strategy:
+      matrix:
+        # Pairs of xnat version + xnat container service plugin version to test.
+        include:
+          - xnat-version: 1.9.2
+            xnat-cs-version: 3.7.2
+
+          - xnat-version: 1.8.3
+            xnat-cs-version: 3.1.0
+
+    name:
+      xnat ${{ matrix.xnat-version }} - container service ${{
+      matrix.xnat-cs-version }}
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v5
+        with:
+          fetch-depth: 0
+          fetch-tags: true
+
+      - name: Set up JDK 1.8
+        uses: actions/setup-java@v5
+        with:
+          distribution: zulu
+          java-version: 8
+
+      - name: Setup Gradle
+        uses: gradle/actions/setup-gradle@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.13"
+          cache: pip
+          cache-dependency-path: python/tests/requirements.txt
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r python/tests/requirements.txt
+
+      - name: Build plugin
+        env:
+          XNAT_VERSION: ${{ matrix.xnat-version }}
+        run: ./gradlew clean xnatPluginJar
+
+      - name: Run tests with pytest
+        env:
+          XNAT_VERSION: ${{ matrix.xnat-version }}
+          XNAT_CS_VERSION: ${{ matrix.xnat-cs-version }}
+        run: pytest

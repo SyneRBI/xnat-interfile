@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-  ~ stir: stir.xsd
+  ~ interfile: interfile.xsd
   ~ XNAT https://www.xnat.org
   ~ Copyright (c) 2022, Physikalisch-Technische Bundesanstalt
   ~ All Rights Reserved
@@ -8,11 +8,11 @@
   ~ Released under Apache 2.0
   -->
 
-<xs:schema targetNamespace="http://ptb.de/stir" xmlns:stir="http://ptb.de/stir"
+<xs:schema targetNamespace="http://ptb.de/interfile" xmlns:interfile="http://ptb.de/interfile"
 		   xmlns:xnat="http://nrg.wustl.edu/xnat"
 		   xmlns:xs="http://www.w3.org/2001/XMLSchema" elementFormDefault="qualified" attributeFormDefault="unqualified">
 	<xs:import namespace="http://nrg.wustl.edu/xnat" schemaLocation="../xnat/xnat.xsd"/>
-	<xs:element name="petLmScanData" type="stir:petLmScanData"/>
+	<xs:element name="petLmScanData" type="interfile:petLmScanData"/>
 
 	<xs:complexType name="petLmScanData">
 		<xs:annotation>

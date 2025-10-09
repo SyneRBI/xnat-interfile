@@ -20,5 +20,4 @@ pluginManagement {
 
 // Replace this with your project name. The project name should indicate
 // the function of the plugin.
-rootProject.name = "stir"
-
+rootProject.name = "interfile"
