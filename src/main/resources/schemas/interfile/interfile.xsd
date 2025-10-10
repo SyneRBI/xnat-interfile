@@ -20,44 +20,46 @@
 		</xs:annotation>
 		<xs:complexContent>
 			<xs:extension base="xnat:imageScanData">
-				<xs:element maxOccurs="1" minOccurs="0" name="scannerInformation">
-					<xs:complexType>
-						<xs:all>
-							<xs:element minOccurs="0" name="name" type="xs:string" />
-						</xs:all>
-					</xs:complexType>
-				</xs:element>
+				<xs:sequence>
+					<xs:element maxOccurs="1" minOccurs="0" name="scannerInformation">
+						<xs:complexType>
+							<xs:all>
+								<xs:element minOccurs="0" name="name" type="xs:string" />
+							</xs:all>
+						</xs:complexType>
+					</xs:element>
 
-				<xs:element maxOccurs="1" minOccurs="0" name="radionuclideInformation">
-					<xs:complexType>
-						<xs:all>
-							<xs:element minOccurs="0" name="radionuclide" type="xs:string" />
-							<xs:element minOccurs="0" name="energy" type="xs:float" />
-							<xs:element minOccurs="0" name="halfLife" type="xs:float" />
-							<xs:element minOccurs="0" name="branchingRatio" type="xs:float" />
-						</xs:all>
-					</xs:complexType>
-				</xs:element>
+					<xs:element maxOccurs="1" minOccurs="0" name="radionuclideInformation">
+						<xs:complexType>
+							<xs:all>
+								<xs:element minOccurs="0" name="radionuclide" type="xs:string" />
+								<xs:element minOccurs="0" name="energy" type="xs:float" />
+								<xs:element minOccurs="0" name="halfLife" type="xs:float" />
+								<xs:element minOccurs="0" name="branchingRatio" type="xs:float" />
+							</xs:all>
+						</xs:complexType>
+					</xs:element>
 
-				<xs:element maxOccurs="1" minOccurs="0" name="examInformation">
-					<xs:complexType>
-						<xs:all>
-							<xs:element minOccurs="0" name="lowEnergyThres" type="xs:float" />
-							<xs:element minOccurs="0" name="highEnergyThres" type="xs:float" />
-							<xs:element minOccurs="0" name="patientPosition" type="xs:string" />
-						</xs:all>
-					</xs:complexType>
-				</xs:element>
+					<xs:element maxOccurs="1" minOccurs="0" name="examInformation">
+						<xs:complexType>
+							<xs:all>
+								<xs:element minOccurs="0" name="lowEnergyThres" type="xs:float" />
+								<xs:element minOccurs="0" name="highEnergyThres" type="xs:float" />
+								<xs:element minOccurs="0" name="patientPosition" type="xs:string" />
+							</xs:all>
+						</xs:complexType>
+					</xs:element>
 
-				<xs:element maxOccurs="1" minOccurs="0" name="frameInformation">
-					<xs:complexType>
-						<xs:all>
-							<xs:element minOccurs="0" name="frameStart" type="xs:float" />
-							<xs:element minOccurs="0" name="frameEnd" type="xs:float" />
-							<xs:element minOccurs="0" name="frameDuration" type="xs:float" />
-						</xs:all>
-					</xs:complexType>
-				</xs:element>
+					<xs:element maxOccurs="1" minOccurs="0" name="frameInformation">
+						<xs:complexType>
+							<xs:all>
+								<xs:element minOccurs="0" name="frameStart" type="xs:float" />
+								<xs:element minOccurs="0" name="frameEnd" type="xs:float" />
+								<xs:element minOccurs="0" name="frameDuration" type="xs:float" />
+							</xs:all>
+						</xs:complexType>
+					</xs:element>
+				</xs:sequence>
 			</xs:extension>
 		</xs:complexContent>
 	</xs:complexType>
