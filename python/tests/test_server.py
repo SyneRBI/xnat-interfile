@@ -118,7 +118,8 @@ def test_upload_of_data(xnat_session):
     print(sorted(f.id for f in xnat_experiment.scans[0].files))
     print(sorted(f.fieldname for f in xnat_experiment.scans[0].files))
     assert sorted(f.fieldname for f in xnat_experiment.scans[0].files) == [
-        "PetLmScanData"
+        "InterfilePetLmScanData",
+        "InterfilePetLmScanData",
     ]
     assert sorted(f.id for f in xnat_experiment.scans[0].files) == [
         "20170809_NEMA_60min_UCL.l",
