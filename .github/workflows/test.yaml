@@ -60,13 +60,11 @@ jobs:
           cache: pip
           cache-dependency-path: python/tests/requirements.txt
 
-      - uses: conda-incubator/setup-miniconda@v2
+      - uses: conda-incubator/setup-miniconda@v3
         with:
-          miniconda-version: "latest"
-          channels: conda-forge, defaults
-          use-only-tar-bz2: true
-          auto-update-conda: true
           auto-activate-base: true
+          activate-environment: ""
+          channels: conda-forge
 
       - name: Install dependencies
         run: |
