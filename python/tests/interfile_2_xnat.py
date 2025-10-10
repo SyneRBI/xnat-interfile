@@ -1,9 +1,8 @@
 from typing import Any
-import stir
 
 
 def interfile_listmode_2_xnat(
-    interfile_listmode_header: stir.ListModeData,
+    interfile_listmode_header: Any,
 ) -> dict[str, Any]:
     """
     This takes the interfile_listmode_header and converts it to a dictionary compatible with XNAT data types.
