@@ -16,6 +16,7 @@ import stir
 import zenodo_get
 import tempfile
 import zipfile
+from xnat.exceptions import XNATResponseError
 
 # Configure logging
 logging.basicConfig(
@@ -30,10 +31,10 @@ logging.basicConfig(
 logger = logging.getLogger(__name__)
 
 
-def verify_project_exists(session: xnat.XNATSession, project_name: str) -> Any:
+def verify_project_exists(xnat_session: xnat.XNATSession, project_name: str) -> Any:
     """Verify project exist on XNAT server - disconnect if project does not exist"""
     try:
-        xnat_project = session.projects[project_name]
+        xnat_project = xnat_session.projects[project_name]
         logger.info(f"Project {xnat_project} exists")
         return xnat_project
     except KeyError:
@@ -88,6 +89,23 @@ def create_unique_subject(
     logger.info(f"Created subject: {subject_id}")
 
     return xnat_subject, time_id
+
+
+def add_project(xnat_session: xnat.XNATSession, project_name: str) -> None:
+    """Add XNAT project"""
+    project_uri = f"/data/archive/projects/{project_name}"
+
+    try:
+        xnat_session.get(project_uri)
+    except XNATResponseError:
+        xnat_session.put(project_uri)
+    else:
+        logger.debug(
+            "'%s' project already exists in test XNAT, skipping add data project",
+            project_name,
+        )
+
+    logger.info(f"Created project: {project_name}")
 
 
 def add_exam(xnat_subject: Any, time_id: str, experiment_date: str) -> Any:

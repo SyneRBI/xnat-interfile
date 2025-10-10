@@ -6,7 +6,7 @@ import tempfile
 import zipfile
 import zenodo_get
 
-from populate_datatype_fields import upload_interfile_data
+from populate_datatype_fields import upload_interfile_data, add_project
 
 
 @pytest.fixture
@@ -84,7 +84,9 @@ def test_interfile_data_fields(xnat_session, interfile_schema_fields):
 
 def test_upload_of_data(xnat_session):
     """Upload real-world data."""
-    project_name = "intefile"
+    project_name = "interfile"
+
+    add_project(xnat_session, project_name)
 
     tmp = tempfile.TemporaryDirectory()
     data_folder = Path(tmp.name)
