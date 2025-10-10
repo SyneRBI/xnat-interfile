@@ -30,6 +30,17 @@ logging.basicConfig(
 logger = logging.getLogger(__name__)
 
 
+def verify_project_exists(session: xnat.XNATSession, project_name: str) -> Any:
+    """Verify project exist on XNAT server - disconnect if project does not exist"""
+    try:
+        xnat_project = session.projects[project_name]
+        logger.info(f"Project {xnat_project} exists")
+        return xnat_project
+    except KeyError:
+        logger.error(f"Project {project_name} not available on server")
+        raise NameError(f"Project {project_name} not available on server.")
+
+
 def upload_interfile_data(
     xnat_session: xnat.XNATSession,
     interfile_listmode_file_path: Path,
@@ -53,17 +64,6 @@ def upload_interfile_data(
     xnat_hdr = interfile_listmode_2_xnat(header)
 
     add_scan(experiment, xnat_hdr, scan_id, interfile_listmode_file_path)
-
-
-def verify_project_exists(session: xnat.XNATSession, project_name: str) -> Any:
-    """Verify project exist on XNAT server - disconnect if project does not exist"""
-    try:
-        xnat_project = session.projects[project_name]
-        logger.info(f"Project {xnat_project} exists")
-        return xnat_project
-    except KeyError:
-        logger.error(f"Project {project_name} not available on server")
-        raise NameError(f"Project {project_name} not available on server.")
 
 
 def create_unique_subject(
