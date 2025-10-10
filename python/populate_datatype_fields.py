@@ -168,7 +168,7 @@ def main():
     password = "admin"
     project_name = "interfile"
 
-    tmp = tempfile.TemporaryDirectory()  # RAII, automatically cleaned up
+    tmp = tempfile.TemporaryDirectory()
     data_folder = Path(tmp.name)
     zenodo_get.download(record="1304454", retry_attempts=5, output_dir=data_folder)
     with zipfile.ZipFile(data_folder / Path("NEMA_IQ.zip"), "r") as zip_ref:
