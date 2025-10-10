@@ -1,4 +1,0 @@
-2025-10-09 18:20:58,057 - __main__ - INFO - Connected to XNAT server
-2025-10-09 18:20:58,057 - populate_datatype_fields - INFO - Interfile file path: /Users/kolbit01/Documents/Code/Repos/xnat-interfile/test-data/2d_cart_cine_0001.h5
-2025-10-09 18:21:48,586 - __main__ - INFO - Connected to XNAT server
-2025-10-09 18:21:48,586 - populate_datatype_fields - INFO - Interfile file path: /Users/kolbit01/Documents/Code/Repos/xnat-mrd/test-data/PET_ACQ_166_20130725111508-0.l.hdr
