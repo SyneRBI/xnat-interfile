@@ -84,4 +84,5 @@ jobs:
         env:
           XNAT_VERSION: ${{ matrix.xnat-version }}
           XNAT_CS_VERSION: ${{ matrix.xnat-cs-version }}
+        shell: bash -l {0}  # required to load conda properly
         run: pytest
