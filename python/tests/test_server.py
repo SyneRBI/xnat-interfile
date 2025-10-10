@@ -115,8 +115,6 @@ def test_upload_of_data(xnat_session):
         .experiments[experiment_name]
     )
 
-    print(sorted(f.id for f in xnat_experiment.scans[0].files))
-    print(sorted(f.fieldname for f in xnat_experiment.scans[0].files))
     assert sorted(f.fieldname for f in xnat_experiment.scans[0].files) == [
         "InterfilePetLmScanData",
         "InterfilePetLmScanData",

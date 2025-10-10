@@ -16,6 +16,7 @@ import zenodo_get
 import tempfile
 import zipfile
 from xnat.exceptions import XNATResponseError
+import datetime
 
 # Configure logging
 logging.basicConfig(
@@ -58,7 +59,7 @@ def upload_interfile_data(
 
     xnat_project = verify_project_exists(xnat_session, project_name)
     xnat_subject = create_subject(xnat_session, xnat_project, subject_name)
-    experiment = add_exam(xnat_subject, experiment_name)
+    experiment = add_experiment(xnat_subject, experiment_name)
 
     # Load interfile header and convert to XNAT format
     header = stir.ListModeData.read_from_file(str(interfile_listmode_file_path))
@@ -106,20 +107,20 @@ def add_project(xnat_session: xnat.XNATSession, project_name: str) -> None:
     logger.info(f"Created project: {project_name}")
 
 
-def add_exam(xnat_subject: Any, experiment_name: str) -> Any:
-    """Add exam/experiment to the XNAT subject"""
+def add_experiment(xnat_subject: Any, experiment_name: str) -> Any:
+    """Add experiment to the XNAT subject"""
     # Check if experiment already exists
     existing_experiments = list(xnat_subject.experiments.values())
     existing_experiment_labels = [exp.label for exp in existing_experiments]
 
     if experiment_name in existing_experiment_labels:
-        logger.error(f"Exam {experiment_name} already exists")
-        raise NameError(f"Exam {experiment_name} already exists.")
+        logger.error(f"Experiment {experiment_name} already exists")
+        raise NameError(f"Experiment {experiment_name} already exists.")
 
     # Create experiment using the proper XNAT object creation method
-    # session.classes.MrSessionData(parent=subject, label='new_experiment_label')
+    # session.classes.PetSessionData(parent=subject, label='new_experiment_label')
     session = xnat_subject.xnat_session
-    experiment = session.classes.MrSessionData(
+    experiment = session.classes.PetSessionData(
         parent=xnat_subject, label=experiment_name
     )
 
@@ -163,7 +164,9 @@ def add_scan(
         scan = experiment.scans[scan_name]
 
     else:
-        logger.error(f"Failed to create scan: {response.status_code} - {response.text}")
+        logger.error(
+            f"Failed to create interfile scan: {response.status_code} - {response.text}"
+        )
         raise Exception(f"Failed to create interfile scan: {response.status_code}")
 
     logger.info(f"Configured interfile scan: {scan_name}")
@@ -184,9 +187,10 @@ def main():
     user = "admin"
     password = "admin"
     project_name = "interfile_project"
-    subject_name = "interfile_subject"
-    experiment_name = "interfile_experiment"
-    scan_name = "interfile_scan"
+    time_id = datetime.now().strftime("%Y-%m-%d-%H-%M-%S-%f")[:-3]
+    subject_name = "Subj-" + time_id
+    experiment_name = "Exp-" + time_id
+    scan_name = "pet_listmode_scan"
 
     tmp = tempfile.TemporaryDirectory()
     data_folder = Path(tmp.name)
