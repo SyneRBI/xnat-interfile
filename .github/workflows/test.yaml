@@ -37,6 +37,10 @@ jobs:
       xnat ${{ matrix.xnat-version }} - container service ${{
       matrix.xnat-cs-version }}
 
+    defaults:
+      run:
+        shell: bash -l {0}
+
     steps:
       - name: Checkout code
         uses: actions/checkout@v5
@@ -67,6 +71,10 @@ jobs:
           auto-update-conda: true
           environment-file: python/environment.yml
           activate-environment: xnatmrd-env
+
+      - run: conda list
+
+      - run: conda info --envs
 
       - name: Install dependencies
         run: |
