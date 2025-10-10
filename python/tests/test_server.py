@@ -84,7 +84,10 @@ def test_interfile_data_fields(xnat_session, interfile_schema_fields):
 
 def test_upload_of_data(xnat_session):
     """Upload real-world data."""
-    project_name = "interfile"
+    project_name = "interfile_project"
+    subject_name = "interfile_subject"
+    experiment_name = "interfile_experiment"
+    scan_name = "interfile_scan"
 
     add_project(xnat_session, project_name)
 
@@ -96,6 +99,28 @@ def test_upload_of_data(xnat_session):
 
     interfile_file_path = data_folder / "NEMA_IQ" / "20170809_NEMA_60min_UCL.l.hdr"
 
-    upload_interfile_data(xnat_session, interfile_file_path, project_name)
+    scan_name = upload_interfile_data(
+        xnat_session,
+        interfile_file_path,
+        project_name,
+        subject_name,
+        experiment_name,
+        scan_name,
+    )
 
-    assert True
+    # verify data was successfully added
+    xnat_experiment = (
+        xnat_session.projects[project_name]
+        .subjects[subject_name]
+        .experiments[experiment_name]
+    )
+
+    print(sorted(f.id for f in xnat_experiment.scans[0].files))
+    print(sorted(f.fieldname for f in xnat_experiment.scans[0].files))
+    assert sorted(f.fieldname for f in xnat_experiment.scans[0].files) == [
+        "PetLmScanData"
+    ]
+    assert sorted(f.id for f in xnat_experiment.scans[0].files) == [
+        "20170809_NEMA_60min_UCL.l",
+        "20170809_NEMA_60min_UCL.l.hdr",
+    ]

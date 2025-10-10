@@ -8,7 +8,6 @@
 
 import xnat
 from pathlib import Path
-from datetime import datetime
 from interfile_2_xnat import interfile_listmode_2_xnat
 import logging
 from typing import Any, Tuple
@@ -46,9 +45,10 @@ def upload_interfile_data(
     xnat_session: xnat.XNATSession,
     interfile_listmode_file_path: Path,
     project_name: str,
-    scan_id: str = "pet_listmode",
-    experiment_date: str = "2022-05-04",
-) -> None:
+    subject_name: str,
+    experiment_name: str,
+    scan_name: str,
+) -> Any:
     logger.info(f"Interfile file path: {interfile_listmode_file_path}")
 
     if not interfile_listmode_file_path.exists():
@@ -57,38 +57,36 @@ def upload_interfile_data(
         )
 
     xnat_project = verify_project_exists(xnat_session, project_name)
-    xnat_subject, time_id = create_unique_subject(xnat_session, xnat_project)
-    experiment = add_exam(xnat_subject, time_id, experiment_date)
+    xnat_subject = create_subject(xnat_session, xnat_project, subject_name)
+    experiment = add_exam(xnat_subject, experiment_name)
 
     # Load interfile header and convert to XNAT format
     header = stir.ListModeData.read_from_file(str(interfile_listmode_file_path))
     xnat_hdr = interfile_listmode_2_xnat(header)
 
-    add_scan(experiment, xnat_hdr, scan_id, interfile_listmode_file_path)
+    xnat_scan = add_scan(experiment, xnat_hdr, scan_name, interfile_listmode_file_path)
+    return xnat_scan
 
 
-def create_unique_subject(
-    session: xnat.XNATSession, xnat_project: Any
+def create_subject(
+    session: xnat.XNATSession, xnat_project: Any, subject_name: str
 ) -> Tuple[Any, str]:
-    """Create a unique subject that doesn't already exist"""
-    time_id = datetime.now().strftime("%Y-%m-%d-%H-%M-%S-%f")[:-3]
-    subject_id = "Subj-" + time_id
-
+    """Create a subject."""
     # Check if subject already exists
     existing_subjects = list(xnat_project.subjects.values())
     existing_subject_labels = [subj.label for subj in existing_subjects]
 
-    if subject_id in existing_subject_labels:
-        logger.error(f"Subject {subject_id} already exists")
-        raise NameError(f"Subject {subject_id} already exists.")
+    if subject_name in existing_subject_labels:
+        logger.error(f"Subject {subject_name} already exists")
+        raise NameError(f"Subject {subject_name} already exists.")
 
     # Create subject using the proper XNAT object creation method
     # As per documentation: session.classes.SubjectData(parent=project, label='new_subject_label')
-    xnat_subject = session.classes.SubjectData(parent=xnat_project, label=subject_id)
+    xnat_subject = session.classes.SubjectData(parent=xnat_project, label=subject_name)
 
-    logger.info(f"Created subject: {subject_id}")
+    logger.info(f"Created subject: {subject_name}")
 
-    return xnat_subject, time_id
+    return xnat_subject
 
 
 def add_project(xnat_session: xnat.XNATSession, project_name: str) -> None:
@@ -108,68 +106,67 @@ def add_project(xnat_session: xnat.XNATSession, project_name: str) -> None:
     logger.info(f"Created project: {project_name}")
 
 
-def add_exam(xnat_subject: Any, time_id: str, experiment_date: str) -> Any:
+def add_exam(xnat_subject: Any, experiment_name: str) -> Any:
     """Add exam/experiment to the XNAT subject"""
-    experiment_id = "Exp-" + time_id
-
     # Check if experiment already exists
     existing_experiments = list(xnat_subject.experiments.values())
     existing_experiment_labels = [exp.label for exp in existing_experiments]
 
-    if experiment_id in existing_experiment_labels:
-        logger.error(f"Exam {experiment_id} already exists")
-        raise NameError(f"Exam {experiment_id} already exists.")
+    if experiment_name in existing_experiment_labels:
+        logger.error(f"Exam {experiment_name} already exists")
+        raise NameError(f"Exam {experiment_name} already exists.")
 
     # Create experiment using the proper XNAT object creation method
     # session.classes.MrSessionData(parent=subject, label='new_experiment_label')
     session = xnat_subject.xnat_session
-    experiment = session.classes.MrSessionData(parent=xnat_subject, label=experiment_id)
-    experiment.date = experiment_date
+    experiment = session.classes.MrSessionData(
+        parent=xnat_subject, label=experiment_name
+    )
 
-    logger.info(f"Created experiment: {experiment_id}")
+    logger.info(f"Created experiment: {experiment_name}")
     return experiment
 
 
 def add_scan(
-    experiment: Any, xnat_hdr: dict, scan_id: str, interfile_file_path: Path
-) -> None:
-    """Add scan to experiment. Create scan with the xnat_hdr info. Add MR_RAW resource
-    to scan with interfile_file data.
+    experiment: Any, xnat_hdr: dict, scan_name: str, interfile_file_path: Path
+) -> Any:
+    """Add scan to experiment. Create scan with the xnat_hdr info. Add PET_RAW resource
+    to scan with interfile data.
 
     Args:
         experiment (Any): existing XNAT experiment
         xnat_hdr (dict): dict containing all the header info to populate in the data type interfile
-        scan_id (str): custom str e.g. cart_cine_scan
-        interfile_file_path (Path): Path of interfile_file containing MR raw data
+        scan_name (str): custom str e.g. cart_cine_scan
+        interfile_path (Path): Path of interfile containing PET listmode data
     """
     # Check if scan already exists, otherwise create it with all header data
-    if scan_id in experiment.scans:
-        logger.error(f"XNAT scan {scan_id} already exists")
-        raise NameError(f"XNAT scan {scan_id} already exists")
+    if scan_name in experiment.scans:
+        logger.error(f"XNAT scan {scan_name} already exists")
+        raise NameError(f"XNAT scan {scan_name} already exists")
 
     # Create the scan with all interfile header data at once
-    logger.info(f"Creating interfile scan {scan_id} with header data")
+    logger.info(f"Creating interfile scan {scan_name} with header data")
 
     # Use the xnat library's proper method for creating scans with data
     session = experiment.xnat_session
-    scan_uri = f"{experiment.uri}/scans/{scan_id}"
+    scan_uri = f"{experiment.uri}/scans/{scan_name}"
 
     # Create the scan using PUT request with all header data as query parameters
     response = session.put(scan_uri, query=xnat_hdr)
 
     if response.ok:
-        logger.info(f"Successfully created interfile scan: {scan_id}")
+        logger.info(f"Successfully created interfile scan: {scan_name}")
         # Refresh the experiment to see the new scan
         experiment.clearcache()
 
         # Get the created scan object
-        scan = experiment.scans[scan_id]
+        scan = experiment.scans[scan_name]
 
     else:
         logger.error(f"Failed to create scan: {response.status_code} - {response.text}")
         raise Exception(f"Failed to create interfile scan: {response.status_code}")
 
-    logger.info(f"Configured interfile scan: {scan_id}")
+    logger.info(f"Configured interfile scan: {scan_name}")
 
     # Create resource for interfile files - create the resource first, then upload
     scan_resource = scan.create_resource("PET_RAW")
@@ -177,14 +174,19 @@ def add_scan(
     scan_resource.upload(
         interfile_file_path, interfile_file_path.name.replace(".l.hdr", ".l")
     )
-    logger.info(f"Successfully created scan {scan_id} and uploaded interfile files")
+    logger.info(f"Successfully created scan {scan_name} and uploaded interfile files")
+
+    return scan
 
 
 def main():
     xnat_server_address = "http://localhost"
     user = "admin"
     password = "admin"
-    project_name = "interfile"
+    project_name = "interfile_project"
+    subject_name = "interfile_subject"
+    experiment_name = "interfile_experiment"
+    scan_name = "interfile_scan"
 
     tmp = tempfile.TemporaryDirectory()
     data_folder = Path(tmp.name)
@@ -197,7 +199,14 @@ def main():
     # Use context manager for automatic connection cleanup
     with xnat.connect(xnat_server_address, user=user, password=password) as session:
         logger.info("Connected to XNAT server")
-        upload_interfile_data(session, interfile_file_path, project_name)
+        upload_interfile_data(
+            session,
+            interfile_file_path,
+            project_name,
+            subject_name,
+            experiment_name,
+            scan_name,
+        )
 
 
 if __name__ == "__main__":
