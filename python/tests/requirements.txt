@@ -3,5 +3,4 @@ xnat
 xnat4tests
 xmlschema
 types-requests
-stir
 zenodo_get
