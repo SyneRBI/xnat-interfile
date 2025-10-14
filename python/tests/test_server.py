@@ -55,18 +55,19 @@ def interfile_schema_fields():
     return component_paths
 
 
-def test_interfilePlugin_installed(xnat_session, plugin_version):
-    assert "interfilePlugin" in xnat_session.plugins
-    interfile_plugin = xnat_session.plugins["interfilePlugin"]
+def test_interfilePlugin_installed(xnat_connection, plugin_version):
+    assert "interfilePlugin" in xnat_connection.session.plugins
+    interfile_plugin = xnat_connection.session.plugins["interfilePlugin"]
     assert interfile_plugin.version == f"{plugin_version}-xpl"
     assert interfile_plugin.name == "XNAT 1.8 Interfile plugin"
 
 
-def test_interfile_data_fields(xnat_session, interfile_schema_fields):
+@pytest.mark.filterwarnings("ignore:Import of namespace")
+def test_interfile_data_fields(xnat_connection, interfile_schema_fields):
     """Confirm that all data fields defined in the interfile schema file - interfile.xsd - are registered in xnat"""
 
     # get interfile data types from xnat session
-    inspector = xnat.inspect.Inspect(xnat_session)
+    inspector = xnat.inspect.Inspect(xnat_connection.session)
     assert "interfile:petLmScanData" in inspector.datatypes()
     xnat_data_fields = inspector.datafields("petLmScanData")
 
@@ -82,8 +83,10 @@ def test_interfile_data_fields(xnat_session, interfile_schema_fields):
     assert sorted(xnat_data_fields) == sorted(expected_data_fields)
 
 
-def test_upload_of_data(xnat_session):
+def test_upload_of_data(xnat_connection):
     """Upload real-world data."""
+
+    xnat_session = xnat_connection.session
     project_name = "interfile_project"
     subject_name = "interfile_subject"
     experiment_name = "interfile_experiment"
