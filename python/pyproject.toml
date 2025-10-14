@@ -1,0 +1,27 @@
+[build-system]
+build-backend = "setuptools.build_meta"
+requires = ["setuptools"]
+
+[project]
+authors = [
+    {email = "arc.collaborations@ucl.ac.uk", name = "Centre for Advanced Research Computing"},
+]
+classifiers = [
+    "Operating System :: OS Independent",
+    "Programming Language :: Python :: 3",
+]
+dependencies = ["xmlschema", "xnat", "zenodo_get"]
+description = "populate datatype fields"
+license = "Apache-2.0"
+name = "xnatinterfile"
+readme = "README.md"
+requires-python = "==3.13.*"
+version = "0.0.1"
+
+[project.optional-dependencies]
+dev = ["pre-commit", "pytest", "types-requests", "xnat4tests"]
+
+[tool.pytest.ini_options]
+markers = [
+    "slow: mark test as slow.",
+]

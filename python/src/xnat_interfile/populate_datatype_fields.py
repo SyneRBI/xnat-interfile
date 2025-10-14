@@ -1,14 +1,6 @@
-# /// script
-# requires-python = ">=3.8"
-# dependencies = [
-#     "xnat==0.7.2",
-#     "xmlschema==4.1.0",
-# ]
-# ///
-
 import xnat
 from pathlib import Path
-from interfile_2_xnat import interfile_listmode_2_xnat
+from xnat_interfile.interfile_2_xnat import interfile_listmode_2_xnat
 import logging
 from typing import Any, Tuple
 import stir
@@ -16,7 +8,7 @@ import zenodo_get
 import tempfile
 import zipfile
 from xnat.exceptions import XNATResponseError
-import datetime
+from datetime import datetime
 
 # Configure logging
 logging.basicConfig(

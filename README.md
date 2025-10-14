@@ -43,7 +43,12 @@ Follow the steps below to run the tests locally on your computer:
 - Install the python dependencies:
 
   ```bash
-  pip install -r python/tests/requirements.txt
+  # Create xnat-interfile-env environment, with - stir - that can only be installed via conda
+  conda env create -f python/environment.yml
+  conda activate xnat-interfile-env
+
+  # Install other dependencies with pip
+  pip install -e ./python[dev]
   ```
 
 - Build the plugin locally, [as described above](#build-the-plugin-locally).
@@ -53,8 +58,27 @@ Follow the steps below to run the tests locally on your computer:
 - Run pytest
 
   ```python
+  cd python
   pytest
   ```
+
+To skip slow running tests (e.g. those that require restarts of the xnat
+instance) use:
+
+```bash
+pytest -m "not slow"
+```
+
+For faster development you can set an environment variable to keep the xnat4test
+instance after an initial run:
+
+```bash
+# Keep xnat4test instance
+export XNAT4TEST_KEEP_INSTANCE=True
+```
+
+If you build a new version of the plugin jar with `gradlew`, you will need to
+stop your container before running tests on it.
 
 ### Running tests locally with a different xnat version
 
@@ -132,13 +156,13 @@ pre-commit uninstall
 
 ## Requirements
 
-If using uv then you can take advantage of the inline requirements at the top of
-populate_datatype_fields.py by running:
+If using uv, you can install required dependencies and run
+`populate_datatype_fields.py` with:
 
 ```shell
 
 uv run populate_datatype_fields.py
 ```
 
-However, the `requirements.txt` file is still available if running the code as
+However, the `environment.yaml` / `pyproject.toml` files are still available if running the code as
 normal with python.

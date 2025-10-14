@@ -65,7 +65,7 @@ jobs:
           python-version: 3.12
           auto-update-conda: true
           environment-file: python/environment.yml
-          activate-environment: xnatmrd-env
+          activate-environment: xnat-interfile-env
 
       - name: Install dependencies
         shell: bash -l {0}  # required to load conda properly

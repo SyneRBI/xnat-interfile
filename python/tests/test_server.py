@@ -6,7 +6,7 @@ import tempfile
 import zipfile
 import zenodo_get
 
-from populate_datatype_fields import upload_interfile_data, add_project
+from xnat_interfile.populate_datatype_fields import upload_interfile_data, add_project
 
 
 @pytest.fixture

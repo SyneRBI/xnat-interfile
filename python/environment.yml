@@ -1,4 +1,4 @@
-name: xnatmrd-env
+name: xnat-interfile-env
 channels:
   - conda-forge
 dependencies:
