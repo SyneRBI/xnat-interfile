@@ -2,9 +2,6 @@ import xnat
 from pathlib import Path
 import xmlschema
 import pytest
-import tempfile
-import zipfile
-import zenodo_get
 
 from xnat_interfile.populate_datatype_fields import upload_interfile_data, add_project
 
@@ -83,7 +80,8 @@ def test_interfile_data_fields(xnat_connection, interfile_schema_fields):
     assert sorted(xnat_data_fields) == sorted(expected_data_fields)
 
 
-def test_upload_of_data(xnat_connection):
+@pytest.mark.usefixtures("remove_test_data")
+def test_upload_of_data(xnat_connection, interfile_file_path):
     """Upload real-world data."""
 
     xnat_session = xnat_connection.session
@@ -93,14 +91,6 @@ def test_upload_of_data(xnat_connection):
     scan_name = "interfile_scan"
 
     add_project(xnat_session, project_name)
-
-    tmp = tempfile.TemporaryDirectory()
-    data_folder = Path(tmp.name)
-    zenodo_get.download(record="1304454", retry_attempts=5, output_dir=data_folder)
-    with zipfile.ZipFile(data_folder / Path("NEMA_IQ.zip"), "r") as zip_ref:
-        zip_ref.extractall(data_folder)
-
-    interfile_file_path = data_folder / "NEMA_IQ" / "20170809_NEMA_60min_UCL.l.hdr"
 
     scan_name = upload_interfile_data(
         xnat_session,
