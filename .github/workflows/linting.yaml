@@ -46,3 +46,9 @@ jobs:
       - name: Run pre-commit
         run: |
           pre-commit run --all-files --color always --verbose
+
+      - name: Auto-fixes commit and push (pre-commit-ci-lite)
+        uses: pre-commit-ci/lite-action@v1.1.0
+        if: always()
+        with:
+          msg: apply code formatting
