@@ -15,7 +15,7 @@ description = "populate datatype fields"
 license = "Apache-2.0"
 name = "xnatinterfile"
 readme = "README.md"
-requires-python = "==3.13.*"
+requires-python = "==3.12.*"
 version = "0.0.1"
 
 [project.optional-dependencies]
