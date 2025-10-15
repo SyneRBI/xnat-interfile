@@ -25,12 +25,11 @@ plugins {
 }
 
 group "gov.ptb.qmri.xnat"
-System.out.println(versionDetails().lastTag)
 def pluginVersion
 if (versionDetails().lastTag ==~ /^v\d+\.\d+\.\d+$/) {
     pluginVersion = versionDetails().lastTag[1..-1]
 } else {
-    pluginVersion = null;
+    pluginVersion = "0.0.1";
 }
 version pluginVersion
 
