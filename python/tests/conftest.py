@@ -107,7 +107,7 @@ def xnat_connection(xnat_config, jar_path, plugin_dir):
     xnat4tests.start_xnat(xnat_config)
     connection = XnatConnection(xnat_config)
 
-    # Install Mrd plugin by copying the jar into the container
+    # Install interfile plugin by copying the jar into the container
     status = subprocess.run(
         [
             "docker",
