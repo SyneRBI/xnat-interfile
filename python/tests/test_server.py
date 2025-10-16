@@ -165,3 +165,24 @@ def test_interfile_data_modification(xnat_connection, interfile_file_path):
     all_headers[new_header] = all_headers.pop(xnat_header)
     assert new_header in all_headers.keys()
     assert xnat_header not in all_headers.keys()
+
+
+@pytest.mark.usefixtures("remove_test_data")
+def test_interfile_data_deletion(xnat_connection, interfile_file_path):
+    xnat_session = xnat_connection.session
+    project_id = "interfile_project"
+    add_project(xnat_session, project_id)
+
+    upload_interfile_data(
+        xnat_session,
+        interfile_file_path,
+        project_id,
+        "interfile_subject",
+        "interfile_experiment",
+        "interfile_scan",
+    )
+
+    experiments = xnat_session.projects[project_id].subjects[0].experiments
+    assert len(experiments) == 1
+    experiments[0].delete()
+    assert len(experiments) == 0
