@@ -10,7 +10,7 @@ classifiers = [
     "Operating System :: OS Independent",
     "Programming Language :: Python :: 3",
 ]
-dependencies = ["xmlschema", "xnat", "zenodo_get"]
+dependencies = ["xmlschema", "xnat"]
 description = "populate datatype fields"
 license = "Apache-2.0"
 name = "xnatinterfile"
