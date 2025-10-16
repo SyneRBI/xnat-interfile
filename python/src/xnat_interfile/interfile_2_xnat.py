@@ -44,7 +44,7 @@ def interfile_listmode_2_xnat(
         float(interfile_listmode_header.get_exam_info().get_high_energy_thres())
     )
     pat_pos = str(interfile_listmode_header.get_exam_info().patient_position)
-    pat_pos = pat_pos.replace("<interfile::PatientPosition::", "").replace(">", "")
+    pat_pos = pat_pos.replace("<stir::PatientPosition::", "").replace(">", "")
     xnat_interfile_dict["interfile:petLmScanData/examInformation/patientPosition"] = (
         pat_pos
     )

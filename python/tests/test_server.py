@@ -2,7 +2,9 @@ import xnat
 from pathlib import Path
 import xmlschema
 import pytest
+import stir
 
+from xnat_interfile.interfile_2_xnat import interfile_listmode_2_xnat
 from xnat_interfile.populate_datatype_fields import upload_interfile_data, add_project
 
 
@@ -50,6 +52,23 @@ def interfile_schema_fields():
         component_paths.append(path)
 
     return component_paths
+
+
+def verify_headers_match(interfile_file_path, scan):
+    """Check headers from a given interfile file match those in an xnat scan object"""
+
+    header = stir.ListModeData.read_from_file(str(interfile_file_path))
+    interfile_headers = interfile_listmode_2_xnat(header)
+
+    for file_key, file_value in interfile_headers.items():
+        if (file_key[0:24] == "interfile:petLmScanData/") and (file_value != ""):
+            xnat_header = file_key[24:]
+
+            # xnat seems to round floats to four decimal places
+            if isinstance(file_value, float):
+                file_value = round(file_value, 4)
+
+            assert file_value == scan.data[xnat_header]
 
 
 def test_interfilePlugin_installed(xnat_connection, plugin_version):
@@ -116,3 +135,5 @@ def test_upload_of_data(xnat_connection, interfile_file_path):
         "20170809_NEMA_60min_UCL.l",
         "20170809_NEMA_60min_UCL.l.hdr",
     ]
+
+    verify_headers_match(interfile_file_path, xnat_experiment.scans[0])
