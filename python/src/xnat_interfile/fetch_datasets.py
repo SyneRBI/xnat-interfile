@@ -28,14 +28,13 @@ def _fetch_from_zenodo(
         image_path = ZENODO.path / f"{zip_file}.zip.unzip" / zip_file / image_name
     else:
         image_path = Path(ZENODO.fetch(image_name))
- 
 
     return image_path
 
 
 def get_data() -> Path:
     """Fetch mrd file with a single dataset, or return cached path if already present."""
-    
+
     test_data_dir = Path(__file__).parents[3] / "test-data"
     image_path = test_data_dir / "NEMA_IQ" / "20170809_NEMA_60min_UCL.l.hdr"
 

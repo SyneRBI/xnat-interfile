@@ -4,8 +4,6 @@ import pytest
 import xnat4tests
 import re
 import os
-import zenodo_get
-import zipfile
 
 from tests.utils import delete_data, XnatConnection
 from xnat_interfile.fetch_datasets import get_data

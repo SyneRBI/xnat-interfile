@@ -4,8 +4,6 @@ from xnat_interfile.interfile_2_xnat import interfile_listmode_2_xnat
 import logging
 from typing import Any, Tuple
 import stir
-import zenodo_get
-import zipfile
 from xnat.exceptions import XNATResponseError
 from datetime import datetime
 
@@ -184,7 +182,7 @@ def main():
     subject_name = "Subj-" + time_id
     experiment_name = "Exp-" + time_id
     scan_name = "pet_listmode_scan"
-    
+
     interfile_data_path = get_data()
     logger.info(f"Interfile data path: {interfile_data_path}")
 
