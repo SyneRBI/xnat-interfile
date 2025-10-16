@@ -15,10 +15,16 @@ import org.nrg.xdat.bean.InterfilePetlmscandataBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 
-@XnatPlugin(value = "interfilePlugin", name = "XNAT 1.8 Interfile plugin",
-            dataModels = {@XnatDataModel(value = InterfilePetlmscandataBean.SCHEMA_ELEMENT_NAME,
-                                         singular = "PET listmode data",
-                                         plural = "PET listmode data",
-                                         code = "INTERFILELM")})
-public class InterfileXnatPlugin {
-}
+@XnatPlugin(
+  value = "interfilePlugin",
+  name = "XNAT 1.8 Interfile plugin",
+  dataModels = {
+    @XnatDataModel(
+      value = InterfilePetlmscandataBean.SCHEMA_ELEMENT_NAME,
+      singular = "PET listmode data",
+      plural = "PET listmode data",
+      code = "INTERFILELM"
+    ),
+  }
+)
+public class InterfileXnatPlugin {}

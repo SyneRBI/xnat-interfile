@@ -62,6 +62,10 @@ repos:
         args:
           - --force-exclude
           - --hidden
+  - repo: https://github.com/jackdewinter/pymarkdown
+    rev: v0.9.32
+    hooks:
+      - id: pymarkdown
   - repo: https://github.com/Lucas-C/pre-commit-hooks
     rev: v1.5.5
     hooks:
@@ -76,6 +80,30 @@ repos:
           - --in-place
           - --spaces-indent-inline-array=4
           - --trailing-comma-inline-array
+  - repo: https://github.com/rbubley/mirrors-prettier
+    rev: v3.6.2
+    hooks:
+      - id: prettier
+        args:
+          - --prose-wrap=always
+          - --quote-props=as-needed
+      - id: prettier
+        name: prettier (xml)
+        additional_dependencies:
+          - prettier@2.8.8
+          - "@prettier/plugin-xml@1.1.0"
+        files: \.(xml|svg|xsd)$
+        args:
+          - --write
+          - --xml-whitespace-sensitivity=ignore
+      - id: prettier
+        name: prettier (java)
+        additional_dependencies:
+          - prettier@2.8.8
+          - prettier-plugin-java@2.0.0
+        files: \.(java|vm|vsl)$
+        args:
+          - --write
   - repo: https://github.com/pre-commit/pre-commit-hooks
     rev: v5.0.0
     hooks:

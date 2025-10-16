@@ -1,6 +1,0 @@
-pytest
-xnat
-xnat4tests
-xmlschema
-types-requests
-zenodo_get

@@ -2,11 +2,12 @@ from pathlib import Path
 import subprocess
 import pytest
 import xnat4tests
-import time
-import requests
-import xnat
 import re
 import os
+import zenodo_get
+import zipfile
+
+from tests.utils import delete_data, XnatConnection
 
 
 @pytest.fixture(scope="session")
@@ -30,11 +31,38 @@ def xnat_container_service_version():
 
 
 @pytest.fixture(scope="session")
-def xnat_config(tmp_path_factory, xnat_version, xnat_container_service_version):
-    tmp_dir = tmp_path_factory.mktemp("data")
+def interfile_file_path():
+    """Download interfile data from zenodo (if not already present), and return path."""
+
+    test_data_dir = Path(__file__).parents[2] / "test-data"
+    interfile_file_path = test_data_dir / "NEMA_IQ" / "20170809_NEMA_60min_UCL.l.hdr"
+
+    if not interfile_file_path.exists():
+        zenodo_get.download(
+            record="1304454", retry_attempts=5, output_dir=test_data_dir
+        )
+        with zipfile.ZipFile(test_data_dir / "NEMA_IQ.zip", "r") as zip_ref:
+            zip_ref.extractall(test_data_dir)
+
+    return interfile_file_path
+
+
+@pytest.fixture
+def remove_test_data(xnat_connection):
+    yield
+    delete_data(xnat_connection.session)
+
+
+@pytest.fixture(scope="session")
+def xnat_config(xnat_version, xnat_container_service_version):
+    xnat_root_dir = Path(__file__).parents[2] / ".xnat4tests" / "root"
+    docker_build_dir = Path(__file__).parents[2] / ".xnat4tests" / "build"
+    xnat_root_dir.mkdir(parents=True, exist_ok=True)
+    docker_build_dir.mkdir(parents=True, exist_ok=True)
 
     return xnat4tests.Config(
-        xnat_root_dir=tmp_dir,
+        xnat_root_dir=xnat_root_dir,
+        docker_build_dir=docker_build_dir,
         docker_image="xnat_interfile_xnat4tests",
         docker_container="xnat_interfile_xnat4tests",
         build_args={
@@ -47,7 +75,19 @@ def xnat_config(tmp_path_factory, xnat_version, xnat_container_service_version):
 @pytest.fixture(scope="session")
 def jar_path():
     jar_dir = Path(__file__).parents[2] / "build" / "libs"
-    return list(jar_dir.glob("interfile-*xpl.jar"))[0]
+    jar_path = list(jar_dir.glob("interfile-*xpl.jar"))[0]
+
+    if not jar_path.exists():
+        raise FileNotFoundError(f"Plugin JAR file not found at {jar_path}")
+
+    return jar_path
+
+
+@pytest.fixture(scope="session")
+def plugin_dir():
+    """Path to plugin directory inside the container"""
+
+    return Path("/data/xnat/home/plugins")
 
 
 @pytest.fixture(scope="session")
@@ -63,49 +103,51 @@ def plugin_version(jar_path):
 
 
 @pytest.fixture(scope="session")
-def xnat_session(xnat_config, jar_path):
-    plugin_path = Path("/data/xnat/home/plugins")
-    if not jar_path.exists():
-        raise FileNotFoundError(f"Plugin JAR file not found at {jar_path}")
-
+def xnat_connection(xnat_config, jar_path, plugin_dir):
     xnat4tests.start_xnat(xnat_config)
+    connection = XnatConnection(xnat_config)
 
     # Install interfile plugin by copying the jar into the container
-    try:
-        subprocess.run(
-            [
-                "docker",
-                "cp",
-                str(jar_path),
-                f"xnat_interfile_xnat4tests:{(plugin_path / jar_path.name).as_posix()}",
-            ],
-            check=True,
-        )
-    except subprocess.CalledProcessError as e:
-        raise RuntimeError(
-            f"Command {e.cmd} returned with error code {e.returncode}: {e.output}"
-        ) from e
+    status = subprocess.run(
+        [
+            "docker",
+            "exec",
+            "xnat_interfile_xnat4tests",
+            "ls",
+            plugin_dir.as_posix(),
+        ],
+        check=True,
+        capture_output=True,
+        text=True,
+    )
+    plugins_list = status.stdout.split("\n")
 
-    xnat4tests.restart_xnat(xnat_config)
-
-    # Wait for XNAT to be available. This is based on code in xnat4tests.start_xnat that waits for the initial
-    # container startup.
-    for attempts in range(xnat_config.connection_attempts):
+    if jar_path.name not in plugins_list:
         try:
-            session = xnat4tests.connect(xnat_config)
-        except (
-            xnat.exceptions.XNATError,
-            requests.ConnectionError,
-            requests.ReadTimeout,
-        ):
-            if attempts == xnat_config.connection_attempts:
-                raise RuntimeError("XNAT did not start in time")
-            else:
-                time.sleep(xnat_config.connection_attempt_sleep)
-        else:
-            break
+            subprocess.run(
+                [
+                    "docker",
+                    "cp",
+                    str(jar_path),
+                    f"xnat_interfile_xnat4tests:{(plugin_dir / jar_path.name).as_posix()}",
+                ],
+                check=True,
+            )
+        except subprocess.CalledProcessError as e:
+            raise RuntimeError(
+                f"Command {e.cmd} returned with error code {e.returncode}: {e.output}"
+            ) from e
 
-    yield session
+        connection.restart_xnat()
 
-    session.disconnect()
-    xnat4tests.stop_xnat(xnat_config)
+    yield connection
+
+    # Allow the docker container to be re-used when the XNAT4TEST_KEEP_INSTANCE environment variable is set.
+    # This is useful for fast local development, where we don't want to wait for the long Docker startup times
+    # between every test run.
+    if os.environ.get("XNAT4TEST_KEEP_INSTANCE", "False").lower() == "false":
+        connection.close()
+        xnat4tests.stop_xnat(xnat_config)
+    else:
+        delete_data(connection.session)
+        connection.close()
