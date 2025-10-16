@@ -111,7 +111,7 @@ def test_upload_of_data(xnat_connection, interfile_file_path):
 
     add_project(xnat_session, project_name)
 
-    scan_name = upload_interfile_data(
+    upload_interfile_data(
         xnat_session,
         interfile_file_path,
         project_name,
@@ -137,3 +137,31 @@ def test_upload_of_data(xnat_connection, interfile_file_path):
     ]
 
     verify_headers_match(interfile_file_path, xnat_experiment.scans[0])
+
+
+@pytest.mark.usefixtures("remove_test_data")
+def test_interfile_data_modification(xnat_connection, interfile_file_path):
+    xnat_session = xnat_connection.session
+    project_id = "interfile_project"
+    add_project(xnat_session, project_id)
+
+    upload_interfile_data(
+        xnat_session,
+        interfile_file_path,
+        project_id,
+        "interfile_subject",
+        "interfile_experiment",
+        "interfile_scan",
+    )
+    subject = xnat_session.projects[project_id].subjects[0]
+
+    xnat_header = "radionuclideInformation/energy"
+    all_headers = subject.experiments[0].scans[0].data
+    assert all_headers[xnat_header] == 511
+    all_headers[xnat_header] = 513
+    assert all_headers[xnat_header] == 513
+    assert xnat_header in all_headers.keys()
+    new_header = "energy"
+    all_headers[new_header] = all_headers.pop(xnat_header)
+    assert new_header in all_headers.keys()
+    assert xnat_header not in all_headers.keys()
