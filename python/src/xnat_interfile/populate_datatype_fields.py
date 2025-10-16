@@ -4,10 +4,10 @@ from xnat_interfile.interfile_2_xnat import interfile_listmode_2_xnat
 import logging
 from typing import Any, Tuple
 import stir
-import zenodo_get
-import zipfile
 from xnat.exceptions import XNATResponseError
 from datetime import datetime
+
+from xnat_interfile.fetch_datasets import get_data
 
 # Configure logging
 logging.basicConfig(
@@ -183,22 +183,15 @@ def main():
     experiment_name = "Exp-" + time_id
     scan_name = "pet_listmode_scan"
 
-    test_data_dir = Path(__file__).parents[3] / "test-data"
-    interfile_file_path = test_data_dir / "NEMA_IQ" / "20170809_NEMA_60min_UCL.l.hdr"
-
-    if not interfile_file_path.exists():
-        zenodo_get.download(
-            record="1304454", retry_attempts=5, output_dir=test_data_dir
-        )
-        with zipfile.ZipFile(test_data_dir / "NEMA_IQ.zip", "r") as zip_ref:
-            zip_ref.extractall(test_data_dir)
+    interfile_data_path = get_data()
+    logger.info(f"Interfile data path: {interfile_data_path}")
 
     # Use context manager for automatic connection cleanup
     with xnat.connect(xnat_server_address, user=user, password=password) as session:
         logger.info("Connected to XNAT server")
         upload_interfile_data(
             session,
-            interfile_file_path,
+            interfile_data_path,
             project_name,
             subject_name,
             experiment_name,
