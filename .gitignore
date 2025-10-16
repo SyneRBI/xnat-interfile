@@ -1,4 +1,6 @@
 .gradle
+.idea
+.vscode
 /build/
 
 # Ignore Gradle GUI config
@@ -13,5 +15,14 @@ gradle-app.setting
 # # Work around https://youtrack.jetbrains.com/issue/IDEA-116898
 # gradle/wrapper/gradle-wrapper.properties
 
-# Ignore Gradle build output directory
-build
+# Python-related files
+__pycache__/
+test-data/
+*.egg-info/
+.xnat4tests/
+
+# Log files
+*.log
+
+# Java-related files
+bin/

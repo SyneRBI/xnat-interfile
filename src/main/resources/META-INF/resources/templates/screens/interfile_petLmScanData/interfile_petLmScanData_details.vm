@@ -1,4 +1,4 @@
-<!-- START /screens/stir_petLmScanData/stir_petLmScanData_details.vm -->
+<!-- START /screens/interfile_petLmScanData/interfile_petLmScanData_details.vm -->
 #macro(escapeProperty $prop)#escapeCleanHTML("$!scan.getProperty($prop)")#end
 <table class="xnat-table alt1 compact rows-only scan-details scan-details-table" style="border: none;">
     <tr>
@@ -44,4 +44,4 @@
         </tr>
     #end
 </table>
-<!-- END /screens/stir_petLmScanData/stir_petLmScanData_details.vm-->
+<!-- END /screens/interfile_petLmScanData/interfile_petLmScanData_details.vm-->

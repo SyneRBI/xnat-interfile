@@ -1,6 +1,6 @@
-<?xml version="1.0" encoding="UTF-8"?><Displays xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="../../xdat/display.xsd" schema-element="stir:petLmScanData" full-description="petLmScanData" brief-description="petLmScanData">
+<?xml version="1.0" encoding="UTF-8"?><Displays xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="../../xdat/display.xsd" schema-element="interfile:petLmScanData" full-description="petLmScanData" brief-description="petLmScanData">
 	<DisplayField id="SESSION_ID" header="image_session_ID" visible="false" searchable="false">
-		<DisplayFieldElement name="Field1" schema-element="stir:petLmScanData/image_session_ID"/>
+		<DisplayFieldElement name="Field1" schema-element="interfile:petLmScanData/image_session_ID"/>
 	</DisplayField>
 	<DisplayField id="SESSION_LABEL" header="Session Label" visible="true" searchable="true">
 		<DisplayFieldElement name="Field1" schema-element="xnat:imageSessionData.label"/>
@@ -20,7 +20,7 @@
 		</HTML-Link>
 	</DisplayField>
 	<DisplayField id="PROJECT" header="Project" visible="true" searchable="true">
-		<DisplayFieldElement name="Field1" schema-element="stir:petLmScanData/project"/>
+		<DisplayFieldElement name="Field1" schema-element="interfile:petLmScanData/project"/>
 		<HTML-Link>
 			<Property name="HREF" value="@WEBAPPapp/action/DisplayItemAction/search_value/@Field1/search_element/xnat:projectData/search_field/xnat:projectData.ID">
 				<InsertValue id="Field1" field="PROJECT"/>
@@ -31,7 +31,7 @@
 		</HTML-Link>
 	</DisplayField>
 	<DisplayField id="ID" header="ID" visible="true" searchable="true">
-		<DisplayFieldElement name="Field1" schema-element="stir:petLmScanData/ID"/>
+		<DisplayFieldElement name="Field1" schema-element="interfile:petLmScanData/ID"/>
 		<HTML-Link>
 			<Property name="HREF" value="@WEBAPPdata/experiments/@Field3/scans/@Field4?format=html">
 				<InsertValue id="Field1" field="PROJECT"/>
@@ -41,38 +41,38 @@
 			</Property>
 		</HTML-Link>
 	</DisplayField>
-	<DisplayField id="SCANNERINFORMATION_NAME" header="name" visible="true" searchable="true">		
-		<DisplayFieldElement name="Field1" schema-element="stir:petLmScanData/scannerInformation/name"/>
+	<DisplayField id="SCANNERINFORMATION_NAME" header="name" visible="true" searchable="true">
+		<DisplayFieldElement name="Field1" schema-element="interfile:petLmScanData/scannerInformation/name"/>
 	</DisplayField>
-	<DisplayField id="RADIONUCLIDEINFORMATION_RADIONUCLIDE" header="radionuclide" visible="true" searchable="true">		
-		<DisplayFieldElement name="Field1" schema-element="stir:petLmScanData/radionuclideInformation/radionuclide"/>
+	<DisplayField id="RADIONUCLIDEINFORMATION_RADIONUCLIDE" header="radionuclide" visible="true" searchable="true">
+		<DisplayFieldElement name="Field1" schema-element="interfile:petLmScanData/radionuclideInformation/radionuclide"/>
 	</DisplayField>
-	<DisplayField id="RADIONUCLIDEINFORMATION_ENERGY" header="energy" visible="true" searchable="true">		
-		<DisplayFieldElement name="Field1" schema-element="stir:petLmScanData/radionuclideInformation/energy"/>
+	<DisplayField id="RADIONUCLIDEINFORMATION_ENERGY" header="energy" visible="true" searchable="true">
+		<DisplayFieldElement name="Field1" schema-element="interfile:petLmScanData/radionuclideInformation/energy"/>
 	</DisplayField>
-	<DisplayField id="RADIONUCLIDEINFORMATION_HALFLIFE" header="halfLife" visible="true" searchable="true">		
-		<DisplayFieldElement name="Field1" schema-element="stir:petLmScanData/radionuclideInformation/halfLife"/>
+	<DisplayField id="RADIONUCLIDEINFORMATION_HALFLIFE" header="halfLife" visible="true" searchable="true">
+		<DisplayFieldElement name="Field1" schema-element="interfile:petLmScanData/radionuclideInformation/halfLife"/>
 	</DisplayField>
-	<DisplayField id="RADIONUCLIDEINFORMATION_BRANCHINGRATIO" header="branchingRatio" visible="true" searchable="true">		
-		<DisplayFieldElement name="Field1" schema-element="stir:petLmScanData/radionuclideInformation/branchingRatio"/>
+	<DisplayField id="RADIONUCLIDEINFORMATION_BRANCHINGRATIO" header="branchingRatio" visible="true" searchable="true">
+		<DisplayFieldElement name="Field1" schema-element="interfile:petLmScanData/radionuclideInformation/branchingRatio"/>
 	</DisplayField>
-	<DisplayField id="EXAMINFORMATION_LOWENERGYTHRES" header="lowEnergyThres" visible="true" searchable="true">		
-		<DisplayFieldElement name="Field1" schema-element="stir:petLmScanData/examInformation/lowEnergyThres"/>
+	<DisplayField id="EXAMINFORMATION_LOWENERGYTHRES" header="lowEnergyThres" visible="true" searchable="true">
+		<DisplayFieldElement name="Field1" schema-element="interfile:petLmScanData/examInformation/lowEnergyThres"/>
 	</DisplayField>
-	<DisplayField id="EXAMINFORMATION_HIGHENERGYTHRES" header="highEnergyThres" visible="true" searchable="true">		
-		<DisplayFieldElement name="Field1" schema-element="stir:petLmScanData/examInformation/highEnergyThres"/>
+	<DisplayField id="EXAMINFORMATION_HIGHENERGYTHRES" header="highEnergyThres" visible="true" searchable="true">
+		<DisplayFieldElement name="Field1" schema-element="interfile:petLmScanData/examInformation/highEnergyThres"/>
 	</DisplayField>
-	<DisplayField id="EXAMINFORMATION_PATIENTPOSITION" header="patientPosition" visible="true" searchable="true">		
-		<DisplayFieldElement name="Field1" schema-element="stir:petLmScanData/examInformation/patientPosition"/>
+	<DisplayField id="EXAMINFORMATION_PATIENTPOSITION" header="patientPosition" visible="true" searchable="true">
+		<DisplayFieldElement name="Field1" schema-element="interfile:petLmScanData/examInformation/patientPosition"/>
 	</DisplayField>
-	<DisplayField id="FRAMEINFORMATION_FRAMESTART" header="frameStart" visible="true" searchable="true">		
-		<DisplayFieldElement name="Field1" schema-element="stir:petLmScanData/frameInformation/frameStart"/>
+	<DisplayField id="FRAMEINFORMATION_FRAMESTART" header="frameStart" visible="true" searchable="true">
+		<DisplayFieldElement name="Field1" schema-element="interfile:petLmScanData/frameInformation/frameStart"/>
 	</DisplayField>
-	<DisplayField id="FRAMEINFORMATION_FRAMEEND" header="frameEnd" visible="true" searchable="true">		
-		<DisplayFieldElement name="Field1" schema-element="stir:petLmScanData/frameInformation/frameEnd"/>
+	<DisplayField id="FRAMEINFORMATION_FRAMEEND" header="frameEnd" visible="true" searchable="true">
+		<DisplayFieldElement name="Field1" schema-element="interfile:petLmScanData/frameInformation/frameEnd"/>
 	</DisplayField>
-	<DisplayField id="FRAMEINFORMATION_FRAMEDURATION" header="frameDuration" visible="true" searchable="true">		
-		<DisplayFieldElement name="Field1" schema-element="stir:petLmScanData/frameInformation/frameDuration"/>
+	<DisplayField id="FRAMEINFORMATION_FRAMEDURATION" header="frameDuration" visible="true" searchable="true">
+		<DisplayFieldElement name="Field1" schema-element="interfile:petLmScanData/frameInformation/frameDuration"/>
 	</DisplayField>
 	<DisplayVersion versionName="listing" default-order-by="IMAGE_SESSION_ID" default-sort-order="DESC" brief-description="petLmScanData" dark-color="9999CC" light-color="CCCCFF">
 		<DisplayFieldRef id="PROJECT"/>

@@ -1,0 +1,5 @@
+name: xnat-interfile-env
+channels:
+  - conda-forge
+dependencies:
+  - stir

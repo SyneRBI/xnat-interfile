@@ -1,5 +1,5 @@
 /*
- * stir: build.gradle
+ * interfile: build.gradle
  * Copyright (c) 2022, Physikalisch-Technische Bundesanstalt
  * All Rights Reserved
  *
@@ -7,8 +7,9 @@
  */
 
 buildscript {
+    // Default to using the given version of xnat, but allow override with the XNAT_VERSION environment variable
     ext {
-        vXnat = "1.8.3"
+        vXnat = System.getenv("XNAT_VERSION") ?: "1.9.2"
     }
 }
 
@@ -16,14 +17,22 @@ buildscript {
 plugins {
     id "jacoco"
     id "java"
-    id "com.palantir.git-version" version "0.12.1"
-    id "io.franzbecker.gradle-lombok" version "4.0.0"
-    id "io.spring.dependency-management" version "1.0.11.RELEASE"
-    id "org.nrg.xnat.build.xnat-data-builder" version "1.8.3"
+    id "com.palantir.git-version" version "3.1.0"
+    id "io.franzbecker.gradle-lombok" version "5.0.0"
+    id "io.spring.dependency-management" version "1.1.6"
+    id "org.nrg.xnat.build.xnat-data-builder" version "${vXnat}"
+    id "maven-publish"
 }
 
 group "gov.ptb.qmri.xnat"
-version "1.0.0-SNAPSHOT"
+def pluginVersion
+if (versionDetails().lastTag ==~ /^v\d+\.\d+\.\d+$/) {
+    pluginVersion = versionDetails().lastTag[1..-1]
+} else {
+    pluginVersion = "0.0.1";
+}
+version pluginVersion
+
 description "XNAT plugin to support stir-readable raw data"
 
 // This provides access to all of these repositories for dependency resolution.
@@ -240,4 +249,29 @@ task xnatPluginJar(type: Jar) {
         exclude "META-INF/*.RSA"
     }
     with jar
+}
+
+
+// Suppress 'enforced-platform' error triggered by publishing to Github Packages.
+// xnat has a dependency on the enforced platform org.nrg:parent
+tasks.withType(GenerateModuleMetadata).configureEach {
+    suppressedValidationErrors.add("enforced-platform")
+}
+
+publishing {
+  publications {
+      gpr(MavenPublication) {
+          from components.java
+      }
+  }
+  repositories {
+    maven {
+      name = "GitHubPackages"
+      url = "https://maven.pkg.github.com/SyneRBI/xnat-interfile"
+      credentials {
+        username = System.getenv("GITHUB_ACTOR")
+        password = System.getenv("GITHUB_TOKEN")
+      }
+    }
+  }
 }
