@@ -3,6 +3,7 @@ from pathlib import Path
 import xmlschema
 import pytest
 import stir
+import subprocess
 
 from xnat_interfile.interfile_2_xnat import interfile_listmode_2_xnat
 from xnat_interfile.populate_datatype_fields import upload_interfile_data, add_project
@@ -186,3 +187,72 @@ def test_interfile_data_deletion(xnat_connection, interfile_file_path):
     assert len(experiments) == 1
     experiments[0].delete()
     assert len(experiments) == 0
+
+
+@pytest.mark.slow
+@pytest.mark.usefixtures("remove_test_data")
+def test_plugin_update(
+    xnat_connection, plugin_dir, jar_path, plugin_version, interfile_file_path
+):
+    """Test that updating the plugin (i.e. copying a new interfile-VERSION-xpl.jar into xnat + restarting) doesn't
+    affect previously uploaded data."""
+
+    xnat_session = xnat_connection.session
+    project_id = "interfile_project"
+    add_project(xnat_session, project_id)
+
+    upload_interfile_data(
+        xnat_session,
+        interfile_file_path,
+        project_id,
+        "interfile_subject",
+        "interfile_experiment",
+        "interfile_scan",
+    )
+
+    # Check plugin version and data is as expected
+    assert xnat_session.plugins["interfilePlugin"].version == f"{plugin_version}-xpl"
+    project = xnat_session.projects[project_id]
+    scan = project.subjects[0].experiments[0].scans[0]
+    verify_headers_match(interfile_file_path, scan)
+
+    # Re-name the plugin jar to another version (to mimic overwriting the existing plugin with a new version)
+    current_plugin_path = plugin_dir / jar_path.name
+    new_plugin_path = plugin_dir / "interfile-0.0.1-xpl.jar"
+
+    try:
+        subprocess.run(
+            [
+                "docker",
+                "exec",
+                "xnat_interfile_xnat4tests",
+                "mv",
+                current_plugin_path.as_posix(),
+                new_plugin_path.as_posix(),
+            ],
+            check=True,
+        )
+
+        xnat_connection.restart_xnat()
+        xnat_session = xnat_connection.session
+        project = xnat_session.projects[project_id]
+
+        # Check no data has been changed after plugin update
+        assert xnat_session.plugins["interfilePlugin"].version == "0.0.1-xpl"
+        scan = project.subjects[0].experiments[0].scans[0]
+        verify_headers_match(interfile_file_path, scan)
+
+    finally:
+        # re-set plugin to original state
+        subprocess.run(
+            [
+                "docker",
+                "exec",
+                "xnat_interfile_xnat4tests",
+                "mv",
+                new_plugin_path.as_posix(),
+                current_plugin_path.as_posix(),
+            ],
+            check=True,
+        )
+        xnat_connection.restart_xnat()
