@@ -17,7 +17,7 @@ def _set_up_zenodo_doi(base_url: str):
 def _fetch_from_zenodo(
     base_url: str, image_name: str, zip_file: Optional[str] = None
 ) -> Path:
-    """Fetch mrd file from zenodo (if not already cached), and return the file path where
+    """Fetch interfile file from zenodo (if not already cached), and return the file path where
     data is downloaded"""
 
     ZENODO = _set_up_zenodo_doi(base_url)
@@ -33,7 +33,7 @@ def _fetch_from_zenodo(
 
 
 def get_data() -> Path:
-    """Fetch mrd file with a single dataset, or return cached path if already present."""
+    """Fetch interfile file with a single dataset, or return cached path if already present."""
 
     test_data_dir = Path(__file__).parents[3] / "test-data"
     image_path = test_data_dir / "NEMA_IQ" / "20170809_NEMA_60min_UCL.l.hdr"
