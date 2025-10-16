@@ -29,7 +29,7 @@ def pluginVersion
 if (versionDetails().lastTag ==~ /^v\d+\.\d+\.\d+$/) {
     pluginVersion = versionDetails().lastTag[1..-1]
 } else {
-    pluginVersion = "0.0.1";
+    pluginVersion = null;
 }
 version pluginVersion
 
