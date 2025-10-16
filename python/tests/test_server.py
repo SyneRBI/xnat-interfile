@@ -2,7 +2,10 @@ import xnat
 from pathlib import Path
 import xmlschema
 import pytest
+import stir
+import subprocess
 
+from xnat_interfile.interfile_2_xnat import interfile_listmode_2_xnat
 from xnat_interfile.populate_datatype_fields import upload_interfile_data, add_project
 
 
@@ -52,6 +55,23 @@ def interfile_schema_fields():
     return component_paths
 
 
+def verify_headers_match(interfile_file_path, scan):
+    """Check headers from a given interfile file match those in an xnat scan object"""
+
+    header = stir.ListModeData.read_from_file(str(interfile_file_path))
+    interfile_headers = interfile_listmode_2_xnat(header)
+
+    for file_key, file_value in interfile_headers.items():
+        if (file_key[0:24] == "interfile:petLmScanData/") and (file_value != ""):
+            xnat_header = file_key[24:]
+
+            # xnat seems to round floats to four decimal places
+            if isinstance(file_value, float):
+                file_value = round(file_value, 4)
+
+            assert file_value == scan.data[xnat_header]
+
+
 def test_interfilePlugin_installed(xnat_connection, plugin_version):
     assert "interfilePlugin" in xnat_connection.session.plugins
     interfile_plugin = xnat_connection.session.plugins["interfilePlugin"]
@@ -92,7 +112,7 @@ def test_upload_of_data(xnat_connection, interfile_file_path):
 
     add_project(xnat_session, project_name)
 
-    scan_name = upload_interfile_data(
+    upload_interfile_data(
         xnat_session,
         interfile_file_path,
         project_name,
@@ -116,3 +136,123 @@ def test_upload_of_data(xnat_connection, interfile_file_path):
         "20170809_NEMA_60min_UCL.l",
         "20170809_NEMA_60min_UCL.l.hdr",
     ]
+
+    verify_headers_match(interfile_file_path, xnat_experiment.scans[0])
+
+
+@pytest.mark.usefixtures("remove_test_data")
+def test_interfile_data_modification(xnat_connection, interfile_file_path):
+    xnat_session = xnat_connection.session
+    project_id = "interfile_project"
+    add_project(xnat_session, project_id)
+
+    upload_interfile_data(
+        xnat_session,
+        interfile_file_path,
+        project_id,
+        "interfile_subject",
+        "interfile_experiment",
+        "interfile_scan",
+    )
+    subject = xnat_session.projects[project_id].subjects[0]
+
+    xnat_header = "radionuclideInformation/energy"
+    all_headers = subject.experiments[0].scans[0].data
+    assert all_headers[xnat_header] == 511
+    all_headers[xnat_header] = 513
+    assert all_headers[xnat_header] == 513
+    assert xnat_header in all_headers.keys()
+    new_header = "energy"
+    all_headers[new_header] = all_headers.pop(xnat_header)
+    assert new_header in all_headers.keys()
+    assert xnat_header not in all_headers.keys()
+
+
+@pytest.mark.usefixtures("remove_test_data")
+def test_interfile_data_deletion(xnat_connection, interfile_file_path):
+    xnat_session = xnat_connection.session
+    project_id = "interfile_project"
+    add_project(xnat_session, project_id)
+
+    upload_interfile_data(
+        xnat_session,
+        interfile_file_path,
+        project_id,
+        "interfile_subject",
+        "interfile_experiment",
+        "interfile_scan",
+    )
+
+    experiments = xnat_session.projects[project_id].subjects[0].experiments
+    assert len(experiments) == 1
+    experiments[0].delete()
+    assert len(experiments) == 0
+
+
+@pytest.mark.slow
+@pytest.mark.usefixtures("remove_test_data")
+def test_plugin_update(
+    xnat_connection, plugin_dir, jar_path, plugin_version, interfile_file_path
+):
+    """Test that updating the plugin (i.e. copying a new interfile-VERSION-xpl.jar into xnat + restarting) doesn't
+    affect previously uploaded data."""
+
+    xnat_session = xnat_connection.session
+    project_id = "interfile_project"
+    add_project(xnat_session, project_id)
+
+    upload_interfile_data(
+        xnat_session,
+        interfile_file_path,
+        project_id,
+        "interfile_subject",
+        "interfile_experiment",
+        "interfile_scan",
+    )
+
+    # Check plugin version and data is as expected
+    assert xnat_session.plugins["interfilePlugin"].version == f"{plugin_version}-xpl"
+    project = xnat_session.projects[project_id]
+    scan = project.subjects[0].experiments[0].scans[0]
+    verify_headers_match(interfile_file_path, scan)
+
+    # Re-name the plugin jar to another version (to mimic overwriting the existing plugin with a new version)
+    current_plugin_path = plugin_dir / jar_path.name
+    new_plugin_path = plugin_dir / "interfile-0.0.1-xpl.jar"
+
+    try:
+        subprocess.run(
+            [
+                "docker",
+                "exec",
+                "xnat_interfile_xnat4tests",
+                "mv",
+                current_plugin_path.as_posix(),
+                new_plugin_path.as_posix(),
+            ],
+            check=True,
+        )
+
+        xnat_connection.restart_xnat()
+        xnat_session = xnat_connection.session
+        project = xnat_session.projects[project_id]
+
+        # Check no data has been changed after plugin update
+        assert xnat_session.plugins["interfilePlugin"].version == "0.0.1-xpl"
+        scan = project.subjects[0].experiments[0].scans[0]
+        verify_headers_match(interfile_file_path, scan)
+
+    finally:
+        # re-set plugin to original state
+        subprocess.run(
+            [
+                "docker",
+                "exec",
+                "xnat_interfile_xnat4tests",
+                "mv",
+                new_plugin_path.as_posix(),
+                current_plugin_path.as_posix(),
+            ],
+            check=True,
+        )
+        xnat_connection.restart_xnat()
