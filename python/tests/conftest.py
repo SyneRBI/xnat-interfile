@@ -8,6 +8,7 @@ import zenodo_get
 import zipfile
 
 from tests.utils import delete_data, XnatConnection
+from xnat_interfile.fetch_datasets import get_data
 
 
 @pytest.fixture(scope="session")
@@ -32,17 +33,9 @@ def xnat_container_service_version():
 
 @pytest.fixture(scope="session")
 def interfile_file_path():
-    """Download interfile data from zenodo (if not already present), and return path."""
+    """Provides the interfile file path"""
 
-    test_data_dir = Path(__file__).parents[2] / "test-data"
-    interfile_file_path = test_data_dir / "NEMA_IQ" / "20170809_NEMA_60min_UCL.l.hdr"
-
-    if not interfile_file_path.exists():
-        zenodo_get.download(
-            record="1304454", retry_attempts=5, output_dir=test_data_dir
-        )
-        with zipfile.ZipFile(test_data_dir / "NEMA_IQ.zip", "r") as zip_ref:
-            zip_ref.extractall(test_data_dir)
+    interfile_file_path = get_data()
 
     return interfile_file_path
 
