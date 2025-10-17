@@ -199,7 +199,7 @@ tasks.withType(Jar) {
 
 // This builds a sources jar that pulls in the manifest with VCS info from above.
 task sourcesJar(type: Jar, dependsOn: classes) {
-    classifier "sources"
+    archiveClassifier.set "sources"
     manifest {
         from gitManifest
     }
@@ -208,7 +208,7 @@ task sourcesJar(type: Jar, dependsOn: classes) {
 
 // This builds a javadoc jar that pulls in the manifest with VCS info from above.
 task javadocJar(type: Jar) {
-    classifier "javadoc"
+    archiveClassifier.set "javadoc"
     manifest {
         from gitManifest
     }
