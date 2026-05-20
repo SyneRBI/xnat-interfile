@@ -1,6 +1,11 @@
-# Interfile
+# PET raw data plugin for XNAT
 
-Xnat schema for PET raw data format supported by STIR.
+[XNAT](https://xnat.org/) schema for PET raw data supported by [STIR](https://github.com/UCL/STIR),
+open-source software for PET and SPECT image reconstruction, which is able to read
+PET raw data from various vendors.
+
+Note: this repository was originally developed for data in the Interfile PET raw data format,
+hence the name, but can be made more general after relaxing a few constraints on file names.
 
 ## Build the plugin locally
 
